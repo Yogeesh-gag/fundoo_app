@@ -51,6 +51,6 @@ def send_verification_email(to_email:str):
         return True,token
     except Exception as e:
         log_error(f"Failed to send email: {e}")
-        return False
+        return False,None
     
     
