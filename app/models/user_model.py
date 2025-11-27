@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from app.database.settings import Base
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -11,3 +12,5 @@ class User(Base):
     age = Column(Integer)
     is_verified = Column(Boolean, default=False)
     role = Column(String, default="user")
+
+    notes = relationship("Note", back_populates="user", cascade="all, delete-orphan")

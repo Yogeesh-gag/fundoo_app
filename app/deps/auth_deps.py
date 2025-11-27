@@ -1,12 +1,19 @@
 from fastapi.security import HTTPBearer
 from fastapi import Depends, HTTPException, status
 from jose import jwt,JWTError
+from fastapi.security import OAuth2PasswordBearer
+
 
 from app.database.database import get_db
 from app.models.user_model import User
-from app.utils.security import JWT_SECRET_KEY, JWT_ALGORITHM
+from dotenv import load_dotenv
+import os
 
-oauth2_scheme = HTTPBearer()
+load_dotenv()
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY","super_secret_jwt_key_change_me")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/auth/login")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme),db=Depends(get_db)):
@@ -18,7 +25,6 @@ def get_current_user(token: str = Depends(oauth2_scheme),db=Depends(get_db)):
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
-
         user.role = role 
         return user
     except JWTError:
