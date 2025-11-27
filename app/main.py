@@ -14,23 +14,23 @@ from app.database.settings import Base, engine
 from app.routes.auth_routes import router as auth_router
 from app.routes.user_routes import router as user_router
 from app.routes.verify_routes import router as verify_router
-
+from app.routes.note_routes import router as note_router
 # Logging
 from app.utils.logging import app_logger
 
 
-# LIFESPAN 
+# -------------------- LIFESPAN --------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle startup and shutdown events cleanly."""
     try:
-        # STARTUP 
+        # ---- STARTUP ----
         Base.metadata.create_all(bind=engine)
         db.connect()
         app_logger.info("Application startup complete.")
         yield
     finally:
-        # SHUTDOWN 
+        # ---- SHUTDOWN ----
         db.disconnect()
         app_logger.info("Application shutdown complete.")
 
@@ -42,7 +42,7 @@ app = FastAPI(
 )
 
 
-# SWAGGER SECURITY 
+# -------------------- SWAGGER SECURITY --------------------
 
 def custom_openapi():
     if app.openapi_schema:
@@ -134,6 +134,7 @@ def root():
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(user_router, prefix="/users", tags=["Users"])
 app.include_router(verify_router, prefix="/verify", tags=["Email Verification"])
+app.include_router(note_router)
 
 
 if __name__ == "__main__":
